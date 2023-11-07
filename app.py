@@ -1,8 +1,8 @@
 import json
 from flask import Flask, jsonify
 
-#  CURRENT_READINGS_FILE_PATH = '/home/pi/Documents/hsys/humidity-control/current.txt'
-CURRENT_READINGS_FILE_PATH = '/home/caleb/dev/humidity-control-server/sample_current.txt'
+CURRENT_READINGS_FILE_PATH = '/home/pi/Documents/hsys/humidity-control/current.txt'
+#  CURRENT_READINGS_FILE_PATH = '/home/caleb/dev/humidity-control-server/sample_current.txt'
 
 app = Flask(__name__, static_folder='static', static_url_path='/static')
 
