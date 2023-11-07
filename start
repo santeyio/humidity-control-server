@@ -1,4 +1,7 @@
 #!/bin/bash
 
 export FLASK_APP=app;
-flask run --host=0.0.0.0
+# this is for flask 1.x
+# flask run --host=0.0.0.0
+# this is for flask 3.x
+flask --app app run --debug --host=0.0.0.0

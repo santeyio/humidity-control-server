@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bootstrap demo</title>
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    <style>
+      #loading-spinner {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        z-index: 99;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="main">
+      <div v-if="loading" id="loading-spinner" class="spinner-border spinner-border-sm"></div>
+      <div class="container-fluid">
+
+        <div class="row mt-3">
+          <div class="d-flex col-6 justify-content-end"><h1>Temp:</h1></div>
+          <div class="d-flex col-6 justify-content-start">
+            <h1><span v-html="formattedTemp"></span></h1>
+          </div>
+        </div>
+
+        <div class="row mt-1">
+          <div class="d-flex col-6 justify-content-end"><h1>Humidity:</h1></div>
+          <div class="d-flex col-6 justify-content-start">
+            <h1><span v-html="formattedHumidity"></span></h1>
+          </div>
+        </div>
+
+        <div class="row mt-1 justify-content-center">
+          {{ formattedDate }}, {{ formattedTime }}
+        </div>
+
+        <hr />
+
+        <div class="row mt-4">
+          <div class="d-flex col-md justify-content-center align-items-center">
+            <button @click="getReadings" class="btn btn-sm btn-primary" :disabled="loading">
+              Refresh
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <script src="/static/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script src="/static/js/luxon.min.js" crossorigin="anonymous"></script>
+
+    <script type="importmap">
+      { "imports": { "vue": "/static/js/vue.esm-browser.js" } }
+    </script>
+    <script type="module">
+      import { createApp } from 'vue';
+
+      const app = createApp({
+        // state
+        data: () => ({
+          loading: false,
+          formattedTemp: '--&deg;C',
+          formattedDate: 'Date',
+          formattedTime: 'Time',
+          formattedHumidity: '--%',
+        }),
+        // setup
+        mounted() {
+          this.getReadings();
+          setInterval(() => this.getReadings(), 5000);
+        },
+        methods: {
+          getReadings() {
+            this.loading = true;
+            fetch('/readings').then((res) => {
+              res.json().then(data => {
+                const {
+                  humidity,
+                  temp,
+                  read_time: readTime,
+                } = data;
+                console.log('temp: ', temp);
+                this.formattedTemp = `${Math.round(Number(temp) * 100) / 100}&deg;C`;
+                this.formattedDate = luxon.DateTime.fromISO(readTime).toFormat('yyyy-MM-dd');
+                this.formattedTime = luxon.DateTime.fromISO(readTime).toFormat('HH:mm.ss');
+                this.formattedHumidity = `${Math.round(Number(humidity) * 100) / 100}%`;
+                this.loading = false;
+              });
+            });
+          },
+        },
+      });
+      app.mount('#main');
+    </script>
+
+
+    <script>
+      /*
+      const toFarenheit = (celsiusTemp) => ((celsiusTemp * (9/5)) + 32);
+
+      (async function () {
+        async function getReadings() {
+          const response = await fetch('/readings');
+          return response.json();
+        }
+        const {
+          humidity,
+          read_time: readTime,
+          temp,
+        } = await getReadings();
+        const formattedDate = luxon.DateTime.fromISO(readTime).toFormat('LLLL d');
+        const formattedTime = luxon.DateTime.fromISO(readTime).toFormat('HH:mm');
+        const roundedTemp = Math.round(Number(temp) * 100) / 100
+        const formattedTemp = `${roundedTemp}&deg;C`;
+        const formattedHumidity = `${humidity}%`;
+
+        const tempEl = document.querySelector('#temp-holder').innerHTML = formattedTemp;
+      })()
+      */
+    </script>
+  </body>
+</html>
