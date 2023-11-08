@@ -83,10 +83,10 @@
                   temp,
                   read_time: readTime,
                 } = data;
-                console.log('temp: ', temp);
+                const date = luxon.DateTime.fromISO(readTime, { zone: 'utc' }).setZone('America/New_York');
                 this.formattedTemp = `${Math.round(Number(temp) * 100) / 100}&deg;C`;
-                this.formattedDate = luxon.DateTime.fromISO(readTime).toFormat('yyyy-MM-dd');
-                this.formattedTime = luxon.DateTime.fromISO(readTime).toFormat('HH:mm.ss');
+                this.formattedDate = date.toFormat('yyyy-MM-dd');
+                this.formattedTime = date.toFormat('HH:mm.ss');
                 this.formattedHumidity = `${Math.round(Number(humidity) * 100) / 100}%`;
                 this.loading = false;
               });
@@ -95,32 +95,6 @@
         },
       });
       app.mount('#main');
-    </script>
-
-
-    <script>
-      /*
-      const toFarenheit = (celsiusTemp) => ((celsiusTemp * (9/5)) + 32);
-
-      (async function () {
-        async function getReadings() {
-          const response = await fetch('/readings');
-          return response.json();
-        }
-        const {
-          humidity,
-          read_time: readTime,
-          temp,
-        } = await getReadings();
-        const formattedDate = luxon.DateTime.fromISO(readTime).toFormat('LLLL d');
-        const formattedTime = luxon.DateTime.fromISO(readTime).toFormat('HH:mm');
-        const roundedTemp = Math.round(Number(temp) * 100) / 100
-        const formattedTemp = `${roundedTemp}&deg;C`;
-        const formattedHumidity = `${humidity}%`;
-
-        const tempEl = document.querySelector('#temp-holder').innerHTML = formattedTemp;
-      })()
-      */
     </script>
   </body>
 </html>
